@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система анализа камней в почках</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .header h1 {
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: var(--primary-color);
+        }
+        
+        .session-info {
+            background-color: var(--light-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .message-box {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .success { 
+            background-color: #d4edda; 
+            border-color: var(--success-color);
+            color: #155724;
+        }
+        
+        .error { 
+            background-color: #f8d7da; 
+            border-color: var(--danger-color);
+            color: #721c24;
+        }
+        
+        .info { 
+            background-color: #d1ecf1; 
+            border-color: var(--primary-color);
+            color: #0c5460;
+        }
+        
+        .warning { 
+            background-color: #fff3cd; 
+            border-color: var(--warning-color);
+            color: #856404;
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            border: 2px solid var(--light-color);
+            border-radius: 10px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .section h2 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .patient-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .patient-info h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .series-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .series-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .series-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--light-color);
+        }
+        
+        .series-table tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .progress-container {
+            margin: 30px 0;
+            padding: 25px;
+            border: 2px solid var(--light-color);
+            border-radius: 10px;
+            background-color: white;
+            display: none;
+        }
+        
+        .progress-container.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            z-index: 1;
+            background-size: 50px 50px;
+            animation: move 2s linear infinite;
+            border-radius: 12px;
+        }
+        
+        @keyframes move {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .progress-percentage {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .progress-stage {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .progress-message {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        input[type="file"] {
+            padding: 15px;
+            border: 2px dashed var(--primary-color);
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            background-color: rgba(102, 126, 234, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        input[type="file"]:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        .selected-series-info {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .results-section {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .results-section.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .results-section h2 {
+            color: var(--success-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .close-session-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка закрытия сессии -->
+    <div class="close-session-btn">
+        <button class="btn btn-danger" onclick="closeSession()">
+            <i class="fas fa-sign-out-alt"></i> Закрыть сессию
+        </button>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-hospital"></i> Система анализа камней в почках</h1>
+            <div class="session-info">
+                <span><i class="fas fa-id-card"></i> Сессия: <strong id="sessionId">{{ session_id[:8] }}...</strong></span>
+                <span><i class="fas fa-clock"></i> Время: <span id="currentTime"></span></span>
+            </div>
+        </div>
+        
+        <!-- Сообщения -->
+        {% if message %}
+        <div class="message-box success pulse">
+            <i class="fas fa-check-circle"></i> {{ message }}
+        </div>
+        {% endif %}
+        
+        {% if error %}
+        <div class="message-box error">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% endif %}
+        
+        <!-- Информация о пациенте -->
+        {% if patient_info %}
+        <div class="patient-info">
+            <h3><i class="fas fa-user-injured"></i> Информация о пациенте</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div><strong>Пациент:</strong> {{ patient_info.patient_name }}</div>
+                <div><strong>ID пациента:</strong> {{ patient_info.patient_id }}</div>
+                <div><strong>Дата исследования:</strong> {{ patient_info.study_date }}</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Секция загрузки файлов -->
+        <div class="section" id="uploadSection">
+            <h2><i class="fas fa-file-upload"></i> Загрузка DICOM файлов</h2>
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
+                <div class="form-group">
+                    <label for="file"><i class="fas fa-file-archive"></i> Выберите ZIP архив с DICOM файлами:</label>
+                    <input type="file" name="file" id="file" accept=".zip" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="uploadBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> Загрузить и проанализировать
+                </button>
+            </form>
+        </div>
+        
+        <!-- Секция выбора серии -->
+        {% if series_list %}
+        <div class="section" id="seriesSection">
+            <h2><i class="fas fa-list"></i> Выбор DICOM серии</h2>
+            <p>Найдено <strong>{{ series_list|length }}</strong> доступных серий. Выберите серию для анализа:</p>
+            
+            <form method="post" id="seriesForm">
+                <table class="series-table">
+                    <thead>
+                        <tr>
+                            <th>Выбрать</th>
+                            <th>Номер серии</th>
+                            <th>Описание</th>
+                            <th>Количество изображений</th>
+                            <th>Модальность</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for series in series_list %}
+                        <tr>
+                            <td>
+                                <input type="radio" name="selected_series" 
+                                       value="{{ series.number }}" 
+                                       {% if loop.first %}checked{% endif %}
+                                       required
+                                       {% if processing_active %}disabled{% endif %}>
+                            </td>
+                            <td>{{ series.number }}</td>
+                            <td>{{ series.description }}</td>
+                            <td>{{ series.image_count }}</td>
+                            <td>{{ series.modality if series.modality else 'CT' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {% if session.get('selected_series_info') %}
+                <div class="selected-series-info">
+                    <strong><i class="fas fa-check-circle"></i> Выбрана серия:</strong> 
+                    {{ session.selected_series_info.number }} - 
+                    {{ session.selected_series_info.description }} 
+                    ({{ session.selected_series_info.image_count }} изображений)
+                </div>
+                {% endif %}
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success" id="processBtn" {% if processing_active %}disabled{% endif %}>
+                        <i class="fas fa-play-circle"></i> 🚀 Начать обработку выбранной серии
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()" {% if processing_active %}disabled{% endif %}>
+                        <i class="fas fa-redo"></i> Загрузить другие файлы
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+        
+        <!-- Прогресс бар -->
+        <div class="progress-container {% if processing_active %}active{% endif %}" id="progressContainer">
+            <div class="progress-header">
+                <h2><i class="fas fa-cogs"></i> Обработка данных</h2>
+                <span class="progress-percentage" id="progressPercentage">0%</span>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="progress-info">
+                <span class="progress-stage" id="progressStage">Ожидание начала...</span>
+                <span id="progressTime">00:00</span>
+            </div>
+            
+            <div class="progress-message" id="progressMessage">
+                Подготовка к обработке...
+            </div>
+            
+            <div class="action-buttons" style="margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="pauseProcessing()" id="pauseBtn" style="display: none;">
+                    <i class="fas fa-pause"></i> Пауза
+                </button>
+                <button class="btn btn-danger" onclick="cancelProcessing()" id="cancelBtn">
+                    <i class="fas fa-stop-circle"></i> Отменить
+                </button>
+            </div>
+        </div>
+        
+        <!-- Секция результатов -->
+        {% if pdf_path or show_results %}
+        <div class="section results-section active" id="resultsSection">
+            <h2><i class="fas fa-check-circle"></i> Результаты анализа</h2>
+            
+            <div class="message-box success" style="margin: 20px 0;">
+                <i class="fas fa-file-pdf"></i> Анализ завершен успешно! Отчет готов к скачиванию.
+            </div>
+            
+            <div class="action-buttons">
+                {% if pdf_path %}
+                <a href="{{ pdf_path }}" class="btn btn-success" download id="downloadBtn">
+                    <i class="fas fa-download"></i> 📥 Скачать PDF отчет
+                </a>
+                {% endif %}
+                
+                <button class="btn btn-primary" onclick="startNewAnalysis()">
+                    <i class="fas fa-redo"></i> 🔄 Новый анализ
+                </button>
+                
+                <button class="btn btn-secondary" onclick="closeSession()">
+                    <i class="fas fa-sign-out-alt"></i> Закрыть сессию
+                </button>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Информация о системе -->
+        <div class="section" style="margin-top: 40px; font-size: 0.9rem; color: #666; text-align: center;">
+            <p><i class="fas fa-info-circle"></i> Система анализа камней в почках v1.0 | Сессия активна в течение 1 часа</p>
+            <p>Для завершения работы закройте сессию или дождитесь автоматической очистки</p>
+        </div>
+    </div>
+    
+    <!-- Скрипты -->
+    <script>
+        // Обновление времени
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU');
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Переменные для управления прогрессом
+        let progressInterval;
+        let startTime;
+        let isProcessing = {% if processing_active %}true{% else %}false{% endif %};
+        let sessionId = "{{ session_id }}";
+        
+        // Функция обновления прогресса
+        function updateProgress() {
+            fetch('/progress')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Ошибка прогресса:', data.error);
+                        return;
+                    }
+                    
+                    if (data.progress !== undefined) {
+                        // Обновляем прогресс бар
+                        const progressFill = document.getElementById('progressFill');
+                        const progressPercentage = document.getElementById('progressPercentage');
+                        const progressStage = document.getElementById('progressStage');
+                        const progressMessage = document.getElementById('progressMessage');
+                        const progressContainer = document.getElementById('progressContainer');
+                        
+                        progressFill.style.width = data.progress + '%';
+                        progressPercentage.textContent = data.progress + '%';
+                        
+                        if (data.stage) {
+                            progressStage.textContent = data.stage;
+                        }
+                        
+                        if (data.message) {
+                            progressMessage.textContent = data.message;
+                        }
+                        
+                        // Показываем контейнер прогресса если идет обработка
+                        if (data.progress > 0 && data.progress < 100 && data.status === 'processing') {
+                            progressContainer.classList.add('active');
+                            isProcessing = true;
+                        }
+                        
+                        // Обновляем время выполнения
+                        if (data.progress > 0 && data.progress < 100) {
+                            updateElapsedTime();
+                        }
+                        
+                        // Если обработка завершена
+                        if (data.status === 'completed') {
+                            progressContainer.classList.remove('active');
+                            isProcessing = false;
+                            
+                            // Останавливаем обновление прогресса
+                            clearInterval(progressInterval);
+                            
+                            // Показываем секцию результатов
+                            showResultsSection(data.pdf_filename);
+                            
+                            // Разблокируем кнопки
+                            unlockButtons();
+                        }
+                        // Если произошла ошибка
+                        else if (data.status === 'error') {
+                            progressContainer.classList.remove('active');
+                            isProcessing = false;
+                            clearInterval(progressInterval);
+                            
+                            // Показываем сообщение об ошибке
+                            showErrorMessage(data.message || 'Произошла ошибка');
+                            
+                            // Разблокируем кнопки
+                            unlockButtons();
+                        }
+                    }
+                })
+                .catch(error => console.error('Ошибка при получении прогресса:', error));
+        }
+
+        // Функция показа секции результатов
+        function showResultsSection(pdfFilename) {
+            let resultsSection = document.getElementById('resultsSection');
+            
+            if (!resultsSection) {
+                // Создаем новую секцию результатов
+                resultsSection = document.createElement('div');
+                resultsSection.className = 'section results-section';
+                resultsSection.id = 'resultsSection';
+                resultsSection.innerHTML = `
+                    <h2><i class="fas fa-check-circle"></i> Результаты анализа</h2>
+                    
+                    <div class="message-box success" style="margin: 20px 0;">
+                        <i class="fas fa-file-pdf"></i> Анализ завершен успешно! Отчет готов к скачиванию.
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="/out/${sessionId}/${pdfFilename}" class="btn btn-success" download id="downloadBtn">
+                            <i class="fas fa-download"></i> 📥 Скачать PDF отчет
+                        </a>
+                        
+                        <button class="btn btn-primary" onclick="startNewAnalysis()">
+                            <i class="fas fa-redo"></i> 🔄 Новый анализ
+                        </button>
+                        
+                        <button class="btn btn-secondary" onclick="closeSession()">
+                            <i class="fas fa-sign-out-alt"></i> Закрыть сессию
+                        </button>
+                    </div>
+                `;
+                
+                // Вставляем после прогресс-контейнера
+                const progressContainer = document.getElementById('progressContainer');
+                const container = document.querySelector('.container');
+                container.insertBefore(resultsSection, progressContainer.nextSibling);
+            }
+            
+            // Показываем секцию с анимацией
+            resultsSection.classList.add('active');
+            
+            // Добавляем сообщение о завершении
+            showCompletionMessage('Обработка завершена успешно!');
+        }
+
+        // Функция показа сообщения о завершении
+        function showCompletionMessage(message) {
+            const container = document.querySelector('.container');
+            
+            // Удаляем старые сообщения о завершении
+            const oldMessages = document.querySelectorAll('.message-box.completion');
+            oldMessages.forEach(msg => msg.remove());
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-box success pulse completion';
+            messageDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            container.insertBefore(messageDiv, container.firstChild.nextSibling);
+        }
+
+        // Функция показа сообщения об ошибке
+        function showErrorMessage(message) {
+            const container = document.querySelector('.container');
+            
+            // Удаляем старые сообщения об ошибке
+            const oldMessages = document.querySelectorAll('.message-box.error-message');
+            oldMessages.forEach(msg => msg.remove());
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-box error error-message';
+            messageDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            container.insertBefore(messageDiv, container.firstChild.nextSibling);
+        }
+
+        // Функция разблокировки кнопок
+        function unlockButtons() {
+            const processBtn = document.getElementById('processBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (processBtn) {
+                processBtn.disabled = false;
+                processBtn.innerHTML = '<i class="fas fa-play-circle"></i> 🚀 Начать обработку выбранной серии';
+            }
+            if (uploadBtn) {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Загрузить и проанализировать';
+            }
+        }
+
+        // Функция обновления времени выполнения
+        function updateElapsedTime() {
+            if (!startTime) {
+                startTime = new Date();
+            }
+            
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            
+            document.getElementById('progressTime').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Функция сброса формы
+        function resetForm() {
+            fetch('/close_session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Ошибка при сбросе формы: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка при сбросе формы');
+            });
+        }
+        
+        // Функция закрытия сессии
+        function closeSession() {
+            if (confirm('Вы уверены, что хотите закрыть сессию? Все временные файлы будут удалены.')) {
+                fetch('/close_session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Ошибка при закрытии сессии: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка при закрытии сессии');
+                });
+            }
+        }
+        
+        // Функция отмены обработки
+        function cancelProcessing() {
+            if (confirm('Вы уверены, что хотите отменить обработку?')) {
+                // Закрываем сессию (это остановит обработку)
+                closeSession();
+            }
+        }
+        
+        // Функция паузы обработки (заглушка)
+        function pauseProcessing() {
+            alert('Функция паузы находится в разработке');
+        }
+        
+        // Функция начала нового анализа
+        function startNewAnalysis() {
+            fetch('/reset_processing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Ошибка при сбросе: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                location.reload();
+            });
+        }
+        
+        // Обработка отправки формы выбора серии
+        document.getElementById('seriesForm')?.addEventListener('submit', function(e) {
+            const processBtn = document.getElementById('processBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            // Блокируем кнопку
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<div class="loading-spinner"></div> Запуск обработки...';
+            
+            // Показываем прогресс бар
+            progressContainer.classList.add('active');
+            
+            // Сбрасываем время
+            startTime = null;
+            
+            // Запускаем обновление прогресса
+            clearInterval(progressInterval);
+            progressInterval = setInterval(updateProgress, 1000);
+            
+            // Обновляем сразу
+            setTimeout(updateProgress, 500);
+        });
+
+        // Обработка отправки формы загрузки файла
+        document.getElementById('uploadForm')?.addEventListener('submit', function(e) {
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            // Блокируем кнопку
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<div class="loading-spinner"></div> Загрузка...';
+        });
+        
+        // Автоматическое обновление прогресса если идет обработка
+        if (isProcessing) {
+            progressInterval = setInterval(updateProgress, 1000);
+            setTimeout(updateProgress, 500);
+        }
+        
+        // Автоматическое закрытие сессии через 1 час
+        setTimeout(() => {
+            if (isProcessing) {
+                alert('Время сессии истекло. Сессия будет закрыта.');
+                closeSession();
+            }
+        }, 3600000);
+        
+        // Добавляем визуальные эффекты
+        document.addEventListener('DOMContentLoaded', function() {
+            // Анимация появления элементов
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                section.style.animationDelay = (index * 0.1) + 's';
+            });
+            
+            // Подсветка выбранной строки в таблице
+            const tableRows = document.querySelectorAll('.series-table tbody tr');
+            tableRows.forEach(row => {
+                const radio = row.querySelector('input[type="radio"]');
+                row.addEventListener('click', function(e) {
+                    if (e.target.type !== 'radio') {
+                        radio.checked = true;
+                        tableRows.forEach(r => r.style.backgroundColor = '');
+                        this.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+                    }
+                });
+                
+                if (radio.checked) {
+                    row.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
