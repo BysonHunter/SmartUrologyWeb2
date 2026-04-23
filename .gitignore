@@ -14,3 +14,9 @@ runs/
 Thumbs.db
 .idea/
 .vscode/
+
+# Large local binaries
+DejaVuSerifCondensed.cw127.pkl
+DejaVuSerifCondensed.pkl
+DejaVuSerifCondensed.ttf
+detectObj/yolov5s.pt
